@@ -1,4 +1,3 @@
-Hello mọi người nha, lâu nay mình vẫn xem chùa mà hôm nay rảnh quá nên muốn làm một **series** về các thuật toán **AI** cho mọi người. Hôm nay mình sẽ làm 1 demo về thuật toán **BFS** nha !
 # **Tổng quan về thuật toán BFS**
 Bây giờ mà nói về cái thuật toán này thì dài lắm, nên mình trích dẫn vài cái link cho những ai chưa rõ về lý thuyết thì tìm hiểu nha : 
 [Wikipedia](https://vi.wikipedia.org/wiki/T%C3%ACm_ki%E1%BA%BFm_theo_chi%E1%BB%81u_r%E1%BB%99ng)
