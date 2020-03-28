@@ -134,22 +134,12 @@
                     { answer : `You can find my projects in "https://github.com/zenlykoi".`, freeze : false },
                 ],
                 '6' : [
-                    { answer : `You can contact to me by some method : `, freeze : true, callback : function(){
-                        showDialog('Contact Methods',`
-                            Facebook : <a class="facebookBtn smGlobalBtn" href="https://www.facebook.com/nguyenphuong.2661999" target="_blank"><i>Link</i></a>
-                            <br>
-                            Gmail : <i><u>nguyenphuong.2661999@gmail.com</u></i>
-                            <br>
-                            Skype : <i><u>live:nguyenphuong.2661999</u></i>
-                            <br>
-                            Phone : <i><u>0971172005</u></i>
-                        `,{
-                            width : 354,
-                            height : 130
-                        });
-                        $('#dialog').on('dialogclose', function(e){
-                            terminal.freeze(false);
-                        });
+                    { answer : `You can contact to me by some method : `, freeze : false, callback : function(){
+                        let followCommand = '[1][Facebook] - "https://www.facebook.com/nguyenphuong.2661999"' + '\n';
+                        followCommand += '[2][Gmail] - "nguyenphuong.2661999@gmail.com"' + '\n';
+                        followCommand += '[3][Skype] - "live:nguyenphuong.2661999"' + '\n';
+                        followCommand += '[4][Phone] - "0971172005"' + '\n';
+                        terminal.echo(followCommand);
                     }},
                 ],
                 '7' : [
