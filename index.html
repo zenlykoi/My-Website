@@ -3,8 +3,14 @@
 <head>
     <title>Do Nguyen Phuong</title>
     <link rel="shortcut icon" type="image/png" href="assets/images/favicon.png"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="text/javascript" src="assets/js/jquery.js"></script>
     <script type="text/javascript" src="assets/js/terminal.js"></script>
+    <script src="assets/js/jquery-ui.js"></script>
+    <script src="assets/js/markdown.js"></script>
+    <link rel="stylesheet" href="assets/css/highlight.css">
+    <script src="assets/js/highlight.js"></script>
+    <link rel="stylesheet" href="assets/css/jquery-ui.css">
     <link rel="stylesheet" type="text/css" href="assets/css/terminal.css">
     <link href="https://fonts.googleapis.com/css?family=Bungee+Shade|Cabin+Sketch|Eater|Ewert|Fredericka+the+Great|Frijole|Press+Start+2P|Rye|VT323&display=swap" rel="stylesheet">
     <style type="text/css">
@@ -18,7 +24,7 @@
         }
         #terminal{
             height: 100%;
-            --size: 3;
+            --size: 2;
         }
         #terminal span{
             color: #00FF00;
@@ -38,16 +44,15 @@
 </head>
 <body>
     <div id="terminal"></div>
-    <audio id="keyboardTouchAudio">
-        <source src="http://pic.pikbest.com/00/57/64/27y888piC6I2.mp3" type="audio/mpeg">
-    </audio>
+    <div id="dialog" title="Basic dialog"></div>
     <script type="text/javascript">
+        let questionCode = 0;
+        let botCommand = false;
+        hljs.initHighlightingOnLoad();
         const terminal = $('#terminal').terminal(terminalCallback,{
             prompt : '>_ ',
-            greetings : false,
-            color : 'green'
+            greetings : false
         });
-        terminal.freeze(true);
 
         function sleep(ms){
             return new Promise(function(resolve,reject){
@@ -55,17 +60,22 @@
             });
         }
 
-        let keyboardTouchAudio = {
-            element : document.getElementById('keyboardTouchAudio'),
-            play : function(){
-                this.element.play();
-            },
-            pause : function(){
-                this.element.pause();
-            }
+        function randomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1) + min);
         }
 
-        async function showCommand(command = '',timeout = 400,delay = 70){
+        function showDialog(title,htmlContent,config = {}){
+            let dialog = document.getElementById('dialog');
+            //dialog.setAttribute('title',title);
+            dialog.innerHTML = htmlContent;
+            $('#dialog').dialog(config);
+            document.querySelector('span[class="ui-dialog-title"]').innerText = title;
+        }
+
+        async function showCommand(command = '',timeout = 400,delay = 50){
+            botCommand = true;
+            if(terminal.frozen())
+                terminal.freeze(true);
             let commandArr = command.split('');
             for(let i=0;i<commandArr.length;i++){
                 await sleep(delay);
@@ -73,24 +83,156 @@
             }
             terminal.keymap().ENTER();
             await sleep(timeout);
+            botCommand = false;
         }
 
-        function terminalCallback(command){
-            console.log(command)
+        let dataQuestion = [
+            {   n : [
+                    { answer : 'Really? (y/n)', freeze : false , nextQuestion : 1 },
+                ],
+                y : [
+                    { answer : 'Ok, what do you want to know?', freeze : false , nextQuestion : 2, callback : function(){
+                        let followCommand = '[1] - Your Age?' + '\n';
+                        followCommand += '[2] - Your Current Job?' + '\n';
+                        followCommand += '[3] - Your Address' + '\n';
+                        followCommand += '[4] - Your IT Skills?' + '\n';
+                        followCommand += '[5] - Your Project?' + '\n';
+                        followCommand += '[6] - How do i contact to you?' + '\n';
+                        followCommand += '[7] - Your Blogs?' + '\n';
+                        terminal.echo(followCommand);
+                    }}
+                ]
+            },
+            {
+                n : [
+                    { answer : 'Please!', freeze : false , nextQuestion : 0},
+                ],
+                y : [
+                    { answer : 'Ok, fine!', freeze : true },
+                ]
+            },
+            {
+                '1' : [
+                    { answer : `I was born in 1999.And now i'm ${(new Date).getFullYear() - 1999} year old!`, freeze : false},
+                ],
+                '2' : [
+                    { answer : `I'm third year student of "Hanoi University of Industry", and i'm a IT Freelancer.`, freeze : false },
+                ],
+                '3' : [
+                    { answer : `Now,i'm living in "Nguyen Xa - Minh Khai - Bac Tu Liem - Ha Noi - Viet Nam".`, freeze : false },
+                ],
+                '4' : [
+                    { answer : `My main skills is JS & PHP.Besides,i know C#,Java,AutoIt,...etc.`, freeze : false },
+                ],
+                '5' : [
+                    { answer : `You can find my projects in "https://github.com/zenlykoi".`, freeze : false },
+                ],
+                '6' : [
+                    { answer : `You can contact to me by some method : `, freeze : true, callback : function(){
+                        showDialog('Contact Methods',`
+                            Facebook : <a class="facebookBtn smGlobalBtn" href="https://www.facebook.com/nguyenphuong.2661999" target="_blank"><i>Link</i></a>
+                            <br>
+                            Gmail : <i><u>nguyenphuong.2661999@gmail.com</u></i>
+                            <br>
+                            Skype : <i><u>live:nguyenphuong.2661999</u></i>
+                            <br>
+                            Phone : <i><u>0971172005</u></i>
+                        `,{
+                            width : 354,
+                            height : 130
+                        });
+                        $('#dialog').on('dialogclose', function(e){
+                            terminal.freeze(false);
+                        });
+                    }},
+                ],
+                '7' : [
+                    { answer : `Let me show you!`, freeze : true, callback : function(){
+                        let blogs = [
+                            {
+                                title : '[AI] [BFS] Demo code thuật toán BFS bằng Javascript',
+                                link : 'http://nguyenphuong.me/blogs/js_ai_demo_code_thuat_toan_bfs_bang_js.md'
+                            },
+                        ];
+                        let html = '';
+                        blogs.forEach(function(blog){
+                            html += `<a href="javascript: void(0)" data-link="${blog.link}">${blog.title}</a><br><hr>`
+                        });
+                        showDialog('Blogs',`
+                            <div style="text-align:center" id="blogs">
+                                ${html}
+                            </div>
+                            <div id="contentWrap" style="display:none">
+                                <a href="javascript: void(0)" id="backBtn">Back</a>
+                                <br>
+                                <hr>
+                                <br>
+                                <div id="content"></div>
+                            </div>
+                        `,{
+                            width : screen.width - 200,
+                            height : screen.height - 200
+                        });
+                        let links = document.querySelectorAll('#dialog a');
+                        var md = window.markdownit({
+                            highlight: function (str, lang) {
+                                if (lang && hljs.getLanguage(lang)) {
+                                    try {
+                                        return '<pre class="hljs"><code>' +
+                                        hljs.highlight(lang, str, true).value +
+                                        '</code></pre>';
+                                    } catch (__) {}
+                                }
+                                return '<pre class="hljs"><code>' + md.utils.escapeHtml(str) + '</code></pre>';
+                            }
+                        });
+                        links.forEach(function(link){
+                            link.onclick = function(){
+                                $.get(link.dataset.link, function(data, status){
+                                    document.querySelector('#dialog #blogs').style.display = 'none';
+                                    document.querySelector('#dialog #content').innerHTML = md.render(data);
+                                    document.querySelector('#dialog #contentWrap').style.display = 'block';
+                                    document.querySelector('#dialog #contentWrap #backBtn').onclick = function(){
+                                        document.querySelector('#dialog #contentWrap').style.display = 'none';
+                                        document.querySelector('#dialog #blogs').style.display = 'block';
+                                    }
+                                });
+                            }
+                        });
+                        $('#dialog').on('dialogclose', function(e){
+                            terminal.freeze(false);
+                        });
+                    }},
+                ]
+            }
+        ];
+
+        async function terminalCallback(command){
+            if(!botCommand){
+                let dataCommand = dataQuestion[questionCode][command];
+                if(dataCommand){
+                    let choosedCommand = dataCommand[randomInt(0,dataCommand.length - 1)];
+                    //await showCommand(choosedCommand.answer);
+                    terminal.echo(choosedCommand.answer);
+                    if(choosedCommand.freeze)
+                        terminal.freeze(true);
+                    if(choosedCommand.callback)
+                        choosedCommand.callback();
+                    if(choosedCommand.nextQuestion || choosedCommand.nextQuestion == 0)
+                        questionCode = choosedCommand.nextQuestion;
+                }
+                else
+                    terminal.echo('Command not found!');
+            }
         }
 
-        async function main(){
-            keyboardTouchAudio.play();
-            await showCommand('Hey guy ^^');
-            await showCommand('My fullname is "Do Nguyen Phuong"');
-            await showCommand('b');
-            await showCommand('c');
-            await showCommand('');
-            await showCommand('');
-            await showCommand('');
-            keyboardTouchAudio.pause();
+        async function greeting(){
+            await showCommand('Hey you ^^');
+            await showCommand('My fullname is "Do Nguyen Phuong".');
+            await showCommand(`Do you want to learn more about me? (y/n)`);
+            terminal.freeze(false);
         }
-        main();
+        greeting();
     </script>
 </body>
 </html>
