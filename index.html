@@ -1,61 +1,95 @@
+<!DOCTYPE html>
 <html>
 <head>
-  <title>Do Nguyen Phuong - Software Developer</title>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="assets/css/w3.css">
-  <link rel="stylesheet" href="assets/css/font_face.css">
-  <link rel="stylesheet" href="assets/css/font-awesome.min.css">
-  <style>
-    body,h1 {
-      font-family: "Raleway", Arial, sans-serif
-    }
-    h1 {
-      letter-spacing: 6px
-    }
-    .w3-row-padding img {
-      margin-bottom: 12px
-    }
-    .skill-container{
-      background-color: #fff;
-      border: 1px solid #e0e0e0;
-      -webkit-box-sizing: border-box;
-      -moz-box-sizing: border-box;
-      box-sizing: border-box;
-      height: 12px;
-      margin-bottom: 12px;
-      width: 100%;
-    }
-    .skill-percentage{
-      webkit-transition: all 2s ease-in-out;
-      -moz-transition: all 2s ease-in-out;
-      -o-transition: all 2s ease-in-out;
-      -ms-transition: all 2s ease-in-out;
-      transition: all 2s ease-in-out;
-      background-color: #e0e0e0;
-      height: 10px;
-      padding: 0;
-    }
-  </style>
+    <title>Do Nguyen Phuong</title>
+    <link rel="shortcut icon" type="image/png" href="assets/images/favicon.png"/>
+    <script type="text/javascript" src="assets/js/jquery.js"></script>
+    <script type="text/javascript" src="assets/js/terminal.js"></script>
+    <link rel="stylesheet" type="text/css" href="assets/css/terminal.css">
+    <link href="https://fonts.googleapis.com/css?family=Bungee+Shade|Cabin+Sketch|Eater|Ewert|Fredericka+the+Great|Frijole|Press+Start+2P|Rye|VT323&display=swap" rel="stylesheet">
+    <style type="text/css">
+        body{
+            margin: 0;
+            height: 100vh;
+            overflow-y: hidden;
+        }
+        *::-webkit-scrollbar {
+            display: none;
+        }
+        #terminal{
+            height: 100%;
+            --size: 3;
+        }
+        #terminal span{
+            color: #00FF00;
+            font-family: 'Cabin Sketch', cursive;
+            font-family: 'Ewert', cursive;
+            font-family: 'Eater', cursive;
+            font-family: 'Bungee Shade', cursive;
+            font-family: 'Rye', cursive;
+            font-family: 'Frijole', cursive;
+            font-family: 'Fredericka the Great', cursive;
+            font-family: 'Cabin Sketch', cursive;
+            font-family: 'VT323', monospace;
+            font-family: 'Press Start 2P', cursive;
+            font-family: 'VT323', monospace;
+        }
+    </style>
 </head>
 <body>
-  <div class="w3-content" style="max-width:1500px">
-    <header class="w3-panel w3-center w3-opacity" style="padding:128px 16px">
-      <h1 class="w3-xlarge">SOFTWARE DEVELOPER</h1>
-      <h1>Do Nguyen Phuong</h1>
-      <div class="w3-padding-32">
-        <div class="w3-bar w3-border">
-          <a href="#" class="w3-bar-item w3-button w3-light-grey">Portfolio</a>
-          <a href="#" class="w3-bar-item w3-button">Blogs</a>
-          <a href="#" class="w3-bar-item w3-button">Contact</a>
-        </div>
-      </div>
-      <div>
-        <div class="skill-container">
-          <div class="skill-percentage skill-1" style="width:50%"></div>
-        </div>
-      </div>
-    </header>
-  </div>
+    <div id="terminal"></div>
+    <audio id="keyboardTouchAudio">
+        <source src="http://pic.pikbest.com/00/57/64/27y888piC6I2.mp3" type="audio/mpeg">
+    </audio>
+    <script type="text/javascript">
+        const terminal = $('#terminal').terminal(terminalCallback,{
+            prompt : '>_ ',
+            greetings : false,
+            color : 'green'
+        });
+        terminal.freeze(true);
+
+        function sleep(ms){
+            return new Promise(function(resolve,reject){
+                setTimeout(function(){ resolve() },ms)
+            });
+        }
+
+        let keyboardTouchAudio = {
+            element : document.getElementById('keyboardTouchAudio'),
+            play : function(){
+                this.element.play();
+            },
+            pause : function(){
+                this.element.pause();
+            }
+        }
+
+        async function showCommand(command = '',timeout = 400,delay = 70){
+            let commandArr = command.split('');
+            for(let i=0;i<commandArr.length;i++){
+                await sleep(delay);
+                terminal.insert(commandArr[i]);
+            }
+            terminal.keymap().ENTER();
+            await sleep(timeout);
+        }
+
+        function terminalCallback(command){
+            console.log(command)
+        }
+
+        async function main(){
+            keyboardTouchAudio.play();
+            await showCommand('Hey guy ^^');
+            await showCommand('My fullname is "Do Nguyen Phuong"');
+            await showCommand('b');
+            await showCommand('c');
+            await showCommand('');
+            await showCommand('');
+            await showCommand('');
+        }
+        main();
+    </script>
 </body>
 </html>
